@@ -2,6 +2,7 @@
 
 - e1_raw2: OFF→25→50→75→100→方向切り替え→逆50→負荷なし50（ツマミを素早く動かした）
 - e3_run1: ゆっくり加速して最大近くまで上げ、ゆっくり減速して止めた
+- e3_run2: e3_run1 と同様。減速の途中で一度ほぼ一定の速さにしてから止めた（第2版で記録）
 """
 
 import csv
@@ -33,6 +34,7 @@ def test_train_state(dut):
     dut.expect("TEST done", timeout=30)
     check_quick_knob(load_trace("e1_raw2"))
     check_slow_ramp(load_trace("e3_run1"))
+    check_slow_ramp_with_plateau(load_trace("e3_run2"))
 
 
 def check_quick_knob(trace):
@@ -69,3 +71,15 @@ def check_slow_ramp(trace):
     assert "Stop" not in states_between(trace, 15500, 54000)
     assert 54000 <= first_time(trace, "Stop", 15500) <= 56800
     assert states_between(trace, 57000, 70000) == {"Stop"}
+
+
+def check_slow_ramp_with_plateau(trace):
+    # 24s ごろから上げ始め、44〜51s が最大、52s から下げて 58〜60s はほぼ一定、そこから止める
+    assert states_between(trace, 0, 23500) == {"Stop"}
+    assert 23500 <= first_time(trace, "Start", 0) <= 25500
+    assert states_between(trace, 25500, 52000) <= {"Start", "Run"}
+    assert "Brake" in states_between(trace, 52000, 58000)
+    # ほぼ一定になったところで走行中に戻る
+    assert "Run" in states_between(trace, 58000, 63000)
+    assert "Stop" not in states_between(trace, 25500, 66000)
+    assert 66000 <= first_time(trace, "Stop", 25500) <= 69000

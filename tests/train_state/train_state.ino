@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-static const char *const kInputs[] = {"e1_raw2", "e3_run1"};
+static const char *const kInputs[] = {"e1_raw2", "e3_run1", "e3_run2"};
 
 static bool runOne(const char *name)
 {
