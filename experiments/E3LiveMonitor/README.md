@@ -21,4 +21,4 @@ uv run tools/capture_serial.py --port /dev/ttyACM0 --out logs/e3_run1.csv
 
 `t_ms,mA,state,level,marker` を 10ms ごとに出す。`t_ms,mA` の 2 列は、そのまま tests/train_state の入力に使える。
 
-画面を描き換えている間はサンプリングが止まるため、実際の出力は 1 秒あたり約 80 行になる。TrainSense は時刻の差を使って計算するので、判定への影響は小さい。
+電流の読み取りと判定は専用のタスク（コア 0）で回すので、画面の描き換えでは止まらない。1 区切り（10ms）に 20 サンプル未満しかないときは、次の区切りに持ち越す。画面の sps は、1 秒あたりのサンプル数。

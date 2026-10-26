@@ -3,6 +3,7 @@
 // 判定した状態と level を画面に出す。同じ値を Serial に CSV で出すので、
 // tools/capture_serial.py で記録すれば、そのまま tests/train_state の入力に使える。
 // 画面をタップするとマーカー番号が増える。
+// 電流の読み取りと判定は別タスク（コア 0）で回し、画面の描き換えで止まらないようにする。
 
 #include <M5Unified.h>
 #include <TrainSense.h>
@@ -20,6 +21,16 @@ static constexpr uint8_t REG_MFG_ID = 0xFE;
 static constexpr uint16_t INA226_CONFIG = 0x4000 | (0 << 9) | (0 << 6) | (0 << 3) | 5;
 
 static constexpr uint32_t WINDOW_MS = 10;
+// 1 区切りに必要な最小サンプル数。足りなければ次の区切りに持ち越す
+static constexpr uint32_t MIN_SAMPLES = 20;
+
+// 判定タスクから画面へ渡す値
+struct Snapshot
+{
+  TrainSense::State state = TrainSense::State::Stop;
+  float level = 0, current = 0, baseline = 0, slope = 0;
+  uint32_t samplesPerSec = 0;
+};
 
 static bool writeReg16(uint8_t reg, uint16_t value)
 {
@@ -51,11 +62,82 @@ static bool probeSensor()
 }
 
 static TrainSense sense;
-static bool sensorOk = false;
-static uint32_t marker = 0;
-static uint32_t windowStartMs = 0;
-static float sumMa = 0;
-static uint32_t count = 0;
+static volatile bool sensorOk = false;
+static volatile uint32_t marker = 0;
+static Snapshot snap;
+static portMUX_TYPE snapMux = portMUX_INITIALIZER_UNLOCKED;
+
+static Snapshot getSnapshot()
+{
+  portENTER_CRITICAL(&snapMux);
+  Snapshot s = snap;
+  portEXIT_CRITICAL(&snapMux);
+  return s;
+}
+
+// 電流を読み続け、10ms ごとの平均を TrainSense に渡す
+static void senseTask(void *)
+{
+  uint32_t windowStartMs = millis();
+  uint32_t secStartMs = windowStartMs;
+  uint32_t secSamples = 0, samplesPerSec = 0;
+  float sumMa = 0;
+  uint32_t count = 0;
+  for (;;)
+  {
+    if (!sensorOk)
+    {
+      sensorOk = probeSensor();
+      vTaskDelay(pdMS_TO_TICKS(sensorOk ? 1 : 1000));
+      windowStartMs = millis();
+      sumMa = 0;
+      count = 0;
+      continue;
+    }
+
+    uint16_t raw;
+    if (readReg16(REG_SHUNT, raw))
+    {
+      sumMa += shuntRawToMilliAmps(int16_t(raw));
+      count++;
+      secSamples++;
+    }
+
+    const uint32_t nowMs = millis();
+    if (nowMs - secStartMs >= 1000)
+    {
+      samplesPerSec = secSamples;
+      secSamples = 0;
+      secStartMs = nowMs;
+    }
+    if (nowMs - windowStartMs >= WINDOW_MS && count >= MIN_SAMPLES)
+    {
+      windowStartMs = nowMs;
+      const float mA = sumMa / count;
+      sumMa = 0;
+      count = 0;
+      sense.update(nowMs, mA);
+      Serial.printf("%lu,%.1f,%s,%.3f,%lu\n", (unsigned long)nowMs, mA, TrainSense::stateName(sense.state()),
+                    sense.level(), (unsigned long)marker);
+
+      Snapshot s;
+      s.state = sense.state();
+      s.level = sense.level();
+      s.current = sense.current();
+      s.baseline = sense.baseline();
+      s.slope = sense.slope();
+      s.samplesPerSec = samplesPerSec;
+      portENTER_CRITICAL(&snapMux);
+      snap = s;
+      portEXIT_CRITICAL(&snapMux);
+    }
+    // ウォッチドッグに CPU を返す（I2C の読み取りは 1 回あたり 100us 程度）
+    if ((secSamples & 63) == 0)
+    {
+      vTaskDelay(1);
+    }
+  }
+}
 
 static uint32_t stateColor(TrainSense::State s)
 {
@@ -103,7 +185,8 @@ static void drawStatus()
     return;
   }
 
-  const auto s = sense.state();
+  const Snapshot sn = getSnapshot();
+  const auto s = sn.state;
   d.fillRect(0, 0, d.width(), 260, d.color888(0x2f, 0x3a, 0x45));
   d.fillRoundRect(40, 40, 480, 180, 24, stateColor(s));
   d.setTextColor(TFT_WHITE);
@@ -114,14 +197,14 @@ static void drawStatus()
   d.setTextDatum(middle_left);
   d.drawString("level", 580, 70);
   d.fillRoundRect(580, 100, 640, 80, 16, d.color888(0x1c, 0x24, 0x2c));
-  d.fillRoundRect(580, 100, int(640 * sense.level()), 80, 16, d.color888(0x4f, 0x8a, 0x5b));
+  d.fillRoundRect(580, 100, int(640 * sn.level), 80, 16, d.color888(0x4f, 0x8a, 0x5b));
 
   char buf[96];
   d.fillRect(0, 260, d.width(), d.height() - 260, d.color888(0xec, 0xea, 0xe4));
   d.setTextColor(d.color888(0x2a, 0x2a, 0x2a));
-  snprintf(buf, sizeof(buf), "電流 %6.1f mA   基準 %5.1f mA", sense.current(), sense.baseline());
+  snprintf(buf, sizeof(buf), "電流 %6.1f mA   基準 %5.1f mA", sn.current, sn.baseline);
   d.drawString(buf, 60, 340);
-  snprintf(buf, sizeof(buf), "傾き %+6.0f mA/s   level %.2f", sense.slope(), sense.level());
+  snprintf(buf, sizeof(buf), "傾き %+6.0f mA/s   level %.2f   %lu sps", sn.slope, sn.level, (unsigned long)sn.samplesPerSec);
   d.drawString(buf, 60, 420);
   snprintf(buf, sizeof(buf), "marker %lu（画面タップで +1）", (unsigned long)marker);
   d.drawString(buf, 60, 500);
@@ -138,13 +221,11 @@ void setup()
   M5.Power.setExtOutput(true);
   delay(100);
   M5.Ex_I2C.begin();
-  sensorOk = probeSensor();
 
   Serial.println("# E3LiveMonitor");
   Serial.println("t_ms,mA,state,level,marker");
   M5.Display.fillScreen(TFT_BLACK);
-  windowStartMs = millis();
-  drawStatus();
+  xTaskCreatePinnedToCore(senseTask, "sense", 4096, nullptr, 5, nullptr, 0);
 }
 
 void loop()
@@ -156,53 +237,12 @@ void loop()
     Serial.printf("# marker %lu\n", (unsigned long)marker);
   }
 
-  if (!sensorOk)
-  {
-    static uint32_t lastProbeMs = 0;
-    if (millis() - lastProbeMs >= 1000)
-    {
-      lastProbeMs = millis();
-      sensorOk = probeSensor();
-      if (sensorOk)
-      {
-        M5.Display.fillScreen(TFT_BLACK);
-        windowStartMs = millis();
-        sumMa = 0;
-        count = 0;
-      }
-      drawStatus();
-    }
-    delay(10);
-    return;
-  }
-
-  uint16_t raw;
-  if (readReg16(REG_SHUNT, raw))
-  {
-    sumMa += shuntRawToMilliAmps(int16_t(raw));
-    count++;
-  }
-
   const uint32_t nowMs = millis();
-  if (nowMs - windowStartMs >= WINDOW_MS)
-  {
-    // 描画などで遅れたときは、遅れを引きずらずに今の時刻から数え直す
-    windowStartMs = nowMs;
-    if (count > 0)
-    {
-      const float mA = sumMa / count;
-      sense.update(nowMs, mA);
-      Serial.printf("%lu,%.1f,%s,%.3f,%lu\n", (unsigned long)nowMs, mA, TrainSense::stateName(sense.state()),
-                    sense.level(), (unsigned long)marker);
-    }
-    sumMa = 0;
-    count = 0;
-  }
-
   static uint32_t lastDrawMs = 0;
   if (nowMs - lastDrawMs >= 200)
   {
     lastDrawMs = nowMs;
     drawStatus();
   }
+  delay(5);
 }
