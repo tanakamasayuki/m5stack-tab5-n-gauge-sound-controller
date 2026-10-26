@@ -124,6 +124,8 @@ void setup()
   M5.Speaker.begin();
   M5.Speaker.setVolume(180);
 
+  // Tab5 の標準の向きは縦（720x1280）。横向きにしてから begin() で基準の向きとして覚えさせる
+  M5.Display.setRotation(1);
   screen.begin();
   screen.setOverlay(driveOverlay);
 
