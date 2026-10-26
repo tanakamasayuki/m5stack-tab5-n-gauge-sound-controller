@@ -42,9 +42,12 @@ def check_quick_knob(trace):
     # 逆50 で動き出し 60.51s、負荷なし 67.03s）。判定はそこから 0.8s 以内に追いつけばよい
     # OFF の間は停止のまま
     assert states_between(trace, 0, 27600) == {"Stop"}
-    # 動き出す → 発進 → 走行中
+    # 動き出す → 発進 → 加速または走行中
     assert 27680 <= first_time(trace, "Start", 0) <= 28480
-    assert first_time(trace, "Run", 27680) <= 31000
+    assert min(first_time(trace, "Run", 27680), first_time(trace, "Accel", 27680)) <= 31000
+    # ツマミを 50→75→100 と上げた直後は加速になる
+    assert "Accel" in states_between(trace, 36500, 40000)
+    assert "Accel" in states_between(trace, 45500, 48000)
     # 100 からツマミを下げると減速になり、止めると停止
     assert "Brake" in states_between(trace, 51500, 55500)
     assert 55010 <= first_time(trace, "Stop", 51500) <= 55810
@@ -64,8 +67,9 @@ def check_slow_ramp(trace):
     # 電流は 13s ごろからゆっくり上がり始め、36s 付近で最大、40s から下げ始めて 55s ごろに止まる
     assert states_between(trace, 0, 13000) == {"Stop"}
     assert 13000 <= first_time(trace, "Start", 0) <= 15500
-    # ゆっくり上げている間に、減速や停止にならない
-    assert states_between(trace, 15500, 36000) <= {"Start", "Run"}
+    # ゆっくり上げている間に、減速や停止にならず、加速と判定される
+    assert states_between(trace, 15500, 36000) <= {"Start", "Run", "Accel"}
+    assert "Accel" in states_between(trace, 15500, 36000)
     # ゆっくり下げている間に、減速と判定される
     assert "Brake" in states_between(trace, 40000, 48000)
     assert "Stop" not in states_between(trace, 15500, 54000)
@@ -77,7 +81,10 @@ def check_slow_ramp_with_plateau(trace):
     # 24s ごろから上げ始め、44〜51s が最大、52s から下げて 58〜60s はほぼ一定、そこから止める
     assert states_between(trace, 0, 23500) == {"Stop"}
     assert 23500 <= first_time(trace, "Start", 0) <= 25500
-    assert states_between(trace, 25500, 52000) <= {"Start", "Run"}
+    assert states_between(trace, 25500, 52000) <= {"Start", "Run", "Accel"}
+    assert "Accel" in states_between(trace, 25500, 45000)
+    # 最大で一定になった区間（46〜51s）は走行中
+    assert "Run" in states_between(trace, 46000, 52000)
     assert "Brake" in states_between(trace, 52000, 58000)
     # ほぼ一定になったところで走行中に戻る
     assert "Run" in states_between(trace, 58000, 63000)

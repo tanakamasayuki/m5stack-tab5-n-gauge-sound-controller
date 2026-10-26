@@ -151,6 +151,8 @@ static uint32_t stateColor(TrainSense::State s)
     return 0x4f8a5bu;
   case TrainSense::State::Brake:
     return 0xb5473fu;
+  case TrainSense::State::Accel:
+    return 0x3d6fa3u;
   }
   return 0xffffffu;
 }
@@ -167,6 +169,8 @@ static const char *stateLabel(TrainSense::State s)
     return "走行中";
   case TrainSense::State::Brake:
     return "減速";
+  case TrainSense::State::Accel:
+    return "加速";
   }
   return "?";
 }

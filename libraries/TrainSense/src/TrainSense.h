@@ -16,6 +16,7 @@ public:
     Start, // 発進（停止から動き出した直後）
     Run,   // 走行中
     Brake, // 減速
+    Accel, // 加速（走行中に、さらに増えている）
   };
 
   struct Config
@@ -30,8 +31,10 @@ public:
     float brakeSlope = -0.04f;    // これより速く減っていたら減速
     float brakeExitSlope = -0.015f; // 減速中に傾きがこれより緩やかになったら走行中へ戻る
     float runSlope = 0.04f;       // 発進中に傾きがこれより緩やかになったら走行中へ
+    float accelSlope = 0.04f;     // 走行中にこれより速く増えていたら加速
+    float accelExitSlope = 0.015f; // 加速中に傾きがこれより緩やかになったら走行中へ戻る
     uint32_t maxStartMs = 3000;   // 発進のまま居続ける上限
-    uint32_t brakeHoldMs = 300;   // 減速を表示し続ける最短時間
+    uint32_t brakeHoldMs = 300;   // 減速・加速を表示し続ける最短時間
     float initialRangeMa = 150;   // level = 1 とみなす増分の初期値
     float rangeDecayMs = 60000;   // 学習した範囲が初期値へ戻っていく速さ
     float baselineUpMs = 20000;   // 停止中に基準値を上へ追従させる速さ（下へはすぐ追従する）
@@ -124,9 +127,14 @@ public:
       {
         setState(State::Stop, nowMs);
       }
-      else if ((levelSlope < _cfg.runSlope && nowMs - _stateMs >= _cfg.confirmMs) || nowMs - _stateMs >= _cfg.maxStartMs)
+      else if (levelSlope < _cfg.runSlope && nowMs - _stateMs >= _cfg.confirmMs)
       {
         setState(State::Run, nowMs);
+      }
+      else if (nowMs - _stateMs >= _cfg.maxStartMs)
+      {
+        // 発進のまま長く増え続けているときは、加速として扱う
+        setState(State::Accel, nowMs);
       }
       break;
     case State::Run:
@@ -137,6 +145,24 @@ public:
       else if (levelSlope < _cfg.brakeSlope)
       {
         setState(State::Brake, nowMs);
+      }
+      else if (levelSlope > _cfg.accelSlope)
+      {
+        setState(State::Accel, nowMs);
+      }
+      break;
+    case State::Accel:
+      if (!_active)
+      {
+        setState(State::Stop, nowMs);
+      }
+      else if (levelSlope < _cfg.brakeSlope)
+      {
+        setState(State::Brake, nowMs);
+      }
+      else if (levelSlope < _cfg.accelExitSlope && nowMs - _stateMs >= _cfg.brakeHoldMs)
+      {
+        setState(State::Run, nowMs);
       }
       break;
     case State::Brake:
@@ -170,6 +196,8 @@ public:
       return "Run";
     case State::Brake:
       return "Brake";
+    case State::Accel:
+      return "Accel";
     }
     return "?";
   }
