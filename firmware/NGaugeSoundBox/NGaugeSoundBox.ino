@@ -8,6 +8,7 @@
 // - 電流検出がないときは、メーター部分をタップすると手動で発車・停車する
 
 #include <M5Unified.h>
+#include <LGFXVirtualCanvas.h> // LGFXScreenBuilder より前に include すると、分割ダブルバッファで描く
 #include <LGFXScreenBuilder.h>
 #include "SoundBoxScreen.h"
 #include "CurrentSensor.h"
