@@ -27,3 +27,13 @@ uv run tools/capture_serial.py --port /dev/ttyACM0 --out logs/e1_run1.csv
 - 1 行は、約 1ms 間隔で取った約 10 サンプルの平均・最小・最大。
 - 画面をタップすると `marker` が 1 増える。「ツマミを上げ始めた」「発進した」などの目印に使い、どのマーカーが何だったかを別にメモしておく。
 - 電流の分解能は 0.5mA（シャント 5mΩ、INA226 のシャント LSB 2.5µV）。
+
+### RAW モード
+
+PWM の波形を見るためのモード。シャント電圧だけを最速（変換 140µs）で読み、1 サンプルずつ `t_us,mA,marker` を出す（約 3,500 サンプル/秒）。
+
+```sh
+uv run tools/capture_serial.py --port /dev/ttyACM0 --out logs/e1_raw1.csv --send r
+```
+
+Serial に `w` を送ると通常モードに戻る。

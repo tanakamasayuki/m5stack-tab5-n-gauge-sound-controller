@@ -1,6 +1,8 @@
 // E1: KATO パワーパック入力電流ロガー
 // U200 (Unit INA226-10A) の値を 10ms ごとに集計して Serial に CSV で出す。
 // 画面をタップするとマーカー番号が増える（「ここで発進」などの目印用）。
+// Serial に 'r' を送ると RAW モード（シャント電圧だけを最速で変換し、1 サンプルずつ出す）、
+// 'w' で通常の集計モードに戻る。
 
 #include <M5Unified.h>
 
@@ -16,6 +18,8 @@ static constexpr uint8_t REG_MFG_ID = 0xFE;
 
 // AVG=1, VBUSCT=140us, VSHCT=588us, shunt+bus continuous
 static constexpr uint16_t INA226_CONFIG = 0x4000 | (0 << 9) | (0 << 6) | (3 << 3) | 7;
+// RAW モード: AVG=1, VSHCT=140us, shunt only continuous
+static constexpr uint16_t INA226_CONFIG_RAW = 0x4000 | (0 << 9) | (0 << 6) | (0 << 3) | 5;
 
 static constexpr uint32_t SAMPLE_US = 1000;
 static constexpr uint32_t WINDOW_MS = 10;
@@ -44,6 +48,7 @@ static float shuntRawToMilliAmps(int16_t raw)
 }
 
 static bool sensorOk = false;
+static bool rawMode = false;
 static uint32_t marker = 0;
 
 static uint32_t windowStartMs = 0;
@@ -142,9 +147,50 @@ void loop()
       if (sensorOk)
       {
         M5.Display.fillScreen(TFT_BLACK);
+        resetWindow();
+        windowStartMs = millis();
+        lastSampleUs = micros();
       }
     }
     delay(10);
+    return;
+  }
+
+  while (Serial.available())
+  {
+    int c = Serial.read();
+    if (c == 'r' && !rawMode)
+    {
+      rawMode = true;
+      writeReg16(REG_CONFIG, INA226_CONFIG_RAW);
+      Serial.println("# raw mode");
+      Serial.println("t_us,mA,marker");
+      M5.Display.fillScreen(TFT_BLACK);
+      M5.Display.setCursor(20, 20);
+      M5.Display.setTextColor(TFT_YELLOW, TFT_BLACK);
+      M5.Display.print("RAW mode (send 'w' to exit)");
+    }
+    else if (c == 'w' && rawMode)
+    {
+      rawMode = false;
+      writeReg16(REG_CONFIG, INA226_CONFIG);
+      Serial.println("# window mode");
+      Serial.println("t_ms,mean_mA,min_mA,max_mA,bus_V,samples,marker");
+      M5.Display.fillScreen(TFT_BLACK);
+      resetWindow();
+      windowStartMs = millis();
+      lastSampleUs = micros();
+    }
+  }
+
+  if (rawMode)
+  {
+    // 描画は止めて、読めるだけ読む（同じ変換結果を重複して読むことがある）
+    uint16_t raw;
+    if (readReg16(REG_SHUNT, raw))
+    {
+      Serial.printf("%lu,%.1f,%lu\n", (unsigned long)micros(), shuntRawToMilliAmps(int16_t(raw)), (unsigned long)marker);
+    }
     return;
   }
 
