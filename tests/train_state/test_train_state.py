@@ -3,6 +3,7 @@
 - e1_raw2: OFF→25→50→75→100→方向切り替え→逆50→負荷なし50（ツマミを素早く動かした）
 - e3_run1: ゆっくり加速して最大近くまで上げ、ゆっくり減速して止めた
 - e3_run2: e3_run1 と同様。減速の途中で一度ほぼ一定の速さにしてから止めた（第2版で記録）
+- e3_steady: 約 95mA の定速で周回。周回ごとに電流が ±5% ほど揺れる（記録は走行中から始まる）
 """
 
 import csv
@@ -35,6 +36,7 @@ def test_train_state(dut):
     check_quick_knob(load_trace("e1_raw2"))
     check_slow_ramp(load_trace("e3_run1"))
     check_slow_ramp_with_plateau(load_trace("e3_run2"))
+    check_steady(load_trace("e3_steady"))
 
 
 def check_quick_knob(trace):
@@ -90,3 +92,9 @@ def check_slow_ramp_with_plateau(trace):
     assert "Run" in states_between(trace, 58000, 63000)
     assert "Stop" not in states_between(trace, 25500, 66000)
     assert 66000 <= first_time(trace, "Stop", 25500) <= 69000
+
+
+def check_steady(trace):
+    # 走行中から記録が始まるので、立ち上がり（発進・加速）が落ち着いたあとを見る。
+    # 周回ごとの負荷の揺れで、加速・減速・停止にならない
+    assert states_between(trace, 6000, 46000) == {"Run"}

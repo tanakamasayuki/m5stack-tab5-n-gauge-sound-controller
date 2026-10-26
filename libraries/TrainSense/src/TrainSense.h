@@ -28,14 +28,14 @@ public:
     float stopMarginMa = 8;     // 基準値からの増分がこれを下回ったら止まったとみなす
     uint32_t confirmMs = 150;   // 動いた・止まったの確定に必要な継続時間
     // 傾きは「level が 1 秒あたりどれだけ変わるか」で判定する（車両による電流の差を吸収するため）
-    float brakeSlope = -0.04f;    // これより速く減っていたら減速
-    float brakeExitSlope = -0.015f; // 減速中に傾きがこれより緩やかになったら走行中へ戻る
+    float brakeSlope = -0.08f;    // これより速く減っていたら減速
+    float brakeExitSlope = -0.03f; // 減速中に傾きがこれより緩やかになったら走行中へ戻る
     float runSlope = 0.04f;       // 発進中に傾きがこれより緩やかになったら走行中へ
-    float accelSlope = 0.04f;     // 走行中にこれより速く増えていたら加速
-    float accelExitSlope = 0.015f; // 加速中に傾きがこれより緩やかになったら走行中へ戻る
+    float accelSlope = 0.08f;     // 走行中にこれより速く増えていたら加速
+    float accelExitSlope = 0.03f; // 加速中に傾きがこれより緩やかになったら走行中へ戻る
     uint32_t maxStartMs = 3000;   // 発進のまま居続ける上限
     uint32_t brakeHoldMs = 300;   // 減速・加速を表示し続ける最短時間
-    float initialRangeMa = 150;   // level = 1 とみなす増分の初期値
+    float initialRangeMa = 176;   // level = 1 とみなす増分の初期値。待機電流 12mA のとき、100mA で level 0.5 になる
     float rangeDecayMs = 60000;   // 学習した範囲が初期値へ戻っていく速さ
     float baselineUpMs = 20000;   // 停止中に基準値を上へ追従させる速さ（下へはすぐ追従する）
     float baselineBandMa = 3;     // 基準値との差がこれ未満のときだけ、上へ追従させる
