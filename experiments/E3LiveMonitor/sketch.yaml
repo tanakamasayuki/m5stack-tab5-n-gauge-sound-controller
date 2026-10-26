@@ -1,0 +1,12 @@
+profiles:
+  m5stack_tab5:
+    fqbn: esp32:esp32:m5stack_tab5:USBMode=hwcdc,CDCOnBoot=cdc
+    platforms:
+      - platform: esp32:esp32 (3.3.12)
+        platform_index_url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+    libraries:
+      - M5Unified (0.2.26)
+      - M5GFX (0.2.33)
+      - dir: ../../libraries/TrainSense
+
+default_profile: m5stack_tab5
