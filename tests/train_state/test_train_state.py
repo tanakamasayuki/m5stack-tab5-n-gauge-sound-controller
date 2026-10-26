@@ -1,4 +1,8 @@
-"""E1 第2回の記録（OFF→25→50→75→100→方向切り替え→逆50→負荷なし50）で状態判定を確かめる。"""
+"""記録した入力電流で状態判定を確かめる。
+
+- e1_raw2: OFF→25→50→75→100→方向切り替え→逆50→負荷なし50（ツマミを素早く動かした）
+- e3_run1: ゆっくり加速して最大近くまで上げ、ゆっくり減速して止めた
+"""
 
 import csv
 from pathlib import Path
@@ -6,8 +10,8 @@ from pathlib import Path
 OUTPUT = Path(__file__).parent / "output"
 
 
-def load_trace():
-    with open(OUTPUT / "trace.csv", encoding="utf-8") as f:
+def load_trace(name):
+    with open(OUTPUT / f"trace_{name}.csv", encoding="utf-8") as f:
         return [{**r, "t": int(r["t_ms"]), "level": float(r["level"])} for r in csv.DictReader(f)]
 
 
@@ -27,8 +31,11 @@ def mean_level(trace, t0, t1):
 def test_train_state(dut):
     dut.expect("TEST start train_state", timeout=15)
     dut.expect("TEST done", timeout=30)
-    trace = load_trace()
+    check_quick_knob(load_trace("e1_raw2"))
+    check_slow_ramp(load_trace("e3_run1"))
 
+
+def check_quick_knob(trace):
     # 時刻は、100ms 平均が 30mA をまたいだ実際の変化点（動き出し 27.68s、停止 55.01s、
     # 逆50 で動き出し 60.51s、負荷なし 67.03s）。判定はそこから 0.8s 以内に追いつけばよい
     # OFF の間は停止のまま
@@ -49,3 +56,16 @@ def test_train_state(dut):
     l25, l50, l75, l100 = (mean_level(trace, *seg) for seg in
                            ((29000, 36000), (38000, 40500), (42500, 45500), (47500, 51500)))
     assert l25 < l50 < l75 < l100, (l25, l50, l75, l100)
+
+
+def check_slow_ramp(trace):
+    # 電流は 13s ごろからゆっくり上がり始め、36s 付近で最大、40s から下げ始めて 55s ごろに止まる
+    assert states_between(trace, 0, 13000) == {"Stop"}
+    assert 13000 <= first_time(trace, "Start", 0) <= 15500
+    # ゆっくり上げている間に、減速や停止にならない
+    assert states_between(trace, 15500, 36000) <= {"Start", "Run"}
+    # ゆっくり下げている間に、減速と判定される
+    assert "Brake" in states_between(trace, 40000, 48000)
+    assert "Stop" not in states_between(trace, 15500, 54000)
+    assert 54000 <= first_time(trace, "Stop", 15500) <= 56800
+    assert states_between(trace, 57000, 70000) == {"Stop"}

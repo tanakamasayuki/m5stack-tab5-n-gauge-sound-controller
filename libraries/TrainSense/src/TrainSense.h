@@ -20,18 +20,22 @@ public:
 
   struct Config
   {
-    float smoothMs = 100;      // 電流の平滑化。PWM（約 7ms 周期）を均す
-    float trendMs = 300;       // 増減の傾きを見るための平滑化
-    float startMarginMa = 20;  // 基準値からこれだけ増えたら動いたとみなす
-    float stopMarginMa = 10;   // 基準値からの増分がこれを下回ったら止まったとみなす
-    uint32_t confirmMs = 150;  // 動いた・止まったの確定に必要な継続時間
-    float brakeSlope = -80;    // これより速く減っていたら減速（mA/s）
-    float runSlope = 40;       // 発進中に傾きがこれを下回ったら走行中へ（mA/s）
-    uint32_t maxStartMs = 3000; // 発進のまま居続ける上限
-    uint32_t brakeHoldMs = 300; // 減速を表示し続ける最短時間
-    float initialRangeMa = 150; // level = 1 とみなす増分の初期値
-    float rangeDecayMs = 60000; // 学習した範囲が初期値へ戻っていく速さ
-    float baselineMs = 2000;    // 停止中に基準値を追従させる速さ
+    float smoothMs = 200;       // 電流の平滑化。PWM（約 7ms 周期）と 10ms 区切りのずれを均す
+    float trendMs = 1000;       // 増減の傾きを見るための平滑化
+    float slopeMs = 500;        // 傾きそのものの平滑化
+    float startMarginMa = 12;   // 基準値からこれだけ増えたら動いたとみなす
+    float stopMarginMa = 8;     // 基準値からの増分がこれを下回ったら止まったとみなす
+    uint32_t confirmMs = 150;   // 動いた・止まったの確定に必要な継続時間
+    // 傾きは「level が 1 秒あたりどれだけ変わるか」で判定する（車両による電流の差を吸収するため）
+    float brakeSlope = -0.04f;    // これより速く減っていたら減速
+    float brakeExitSlope = -0.015f; // 減速中に傾きがこれより緩やかになったら走行中へ戻る
+    float runSlope = 0.04f;       // 発進中に傾きがこれより緩やかになったら走行中へ
+    uint32_t maxStartMs = 3000;   // 発進のまま居続ける上限
+    uint32_t brakeHoldMs = 300;   // 減速を表示し続ける最短時間
+    float initialRangeMa = 150;   // level = 1 とみなす増分の初期値
+    float rangeDecayMs = 60000;   // 学習した範囲が初期値へ戻っていく速さ
+    float baselineUpMs = 20000;   // 停止中に基準値を上へ追従させる速さ（下へはすぐ追従する）
+    float baselineBandMa = 3;     // 基準値との差がこれ未満のときだけ、上へ追従させる
   };
 
   TrainSense() {}
@@ -68,16 +72,17 @@ public:
     _prevSlow = _slow;
     _slow += (mA - _slow) * alpha(dt, _cfg.trendMs);
     const float d = (_slow - _prevSlow) * 1000.0f / dt;
-    _slope += (d - _slope) * alpha(dt, _cfg.trendMs);
+    _slope += (d - _slope) * alpha(dt, _cfg.slopeMs);
 
-    // 基準値（待機電流）。停止中だけ追従し、下回ったらすぐ下げる
+    // 基準値（待機電流）。下回ったらすぐ下げ、上へは停止中にゆっくりだけ追従する。
+    // ゆっくりツマミを上げたときに、基準値まで一緒に上がってしまわないようにするため
     if (_fast < _baseline)
     {
       _baseline = _fast;
     }
-    else if (_state == State::Stop && _fast - _baseline < _cfg.stopMarginMa)
+    else if (_state == State::Stop && _fast - _baseline < _cfg.baselineBandMa)
     {
-      _baseline += (_fast - _baseline) * alpha(dt, _cfg.baselineMs);
+      _baseline += (_fast - _baseline) * alpha(dt, _cfg.baselineUpMs);
     }
 
     const float excess = _fast - _baseline;
@@ -92,6 +97,7 @@ public:
       _range += (_cfg.initialRangeMa - _range) * alpha(dt, _cfg.rangeDecayMs);
     }
     _level = excess <= 0 ? 0 : (excess >= _range ? 1 : excess / _range);
+    const float levelSlope = _slope / _range;
 
     // 動いている・止まっている（ヒステリシスと継続時間で確定）
     const bool wantActive = _active ? (excess > _cfg.stopMarginMa) : (excess > _cfg.startMarginMa);
@@ -118,7 +124,7 @@ public:
       {
         setState(State::Stop, nowMs);
       }
-      else if ((_slope < _cfg.runSlope && nowMs - _stateMs >= _cfg.confirmMs) || nowMs - _stateMs >= _cfg.maxStartMs)
+      else if ((levelSlope < _cfg.runSlope && nowMs - _stateMs >= _cfg.confirmMs) || nowMs - _stateMs >= _cfg.maxStartMs)
       {
         setState(State::Run, nowMs);
       }
@@ -128,7 +134,7 @@ public:
       {
         setState(State::Stop, nowMs);
       }
-      else if (_slope < _cfg.brakeSlope)
+      else if (levelSlope < _cfg.brakeSlope)
       {
         setState(State::Brake, nowMs);
       }
@@ -138,7 +144,7 @@ public:
       {
         setState(State::Stop, nowMs);
       }
-      else if (_slope > _cfg.brakeSlope / 2 && nowMs - _stateMs >= _cfg.brakeHoldMs)
+      else if (levelSlope > _cfg.brakeExitSlope && nowMs - _stateMs >= _cfg.brakeHoldMs)
       {
         setState(State::Run, nowMs);
       }
