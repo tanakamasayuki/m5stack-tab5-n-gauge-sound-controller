@@ -92,6 +92,9 @@ void setup()
   Serial.begin(115200);
   M5.Display.fillScreen(TFT_BLACK);
 
+  // Grove (Port A) の 5V 出力を有効にする（U200 の電源）
+  M5.Power.setExtOutput(true);
+  delay(100);
   M5.Ex_I2C.begin();
   uint16_t mfg = 0;
   sensorOk = readReg16(REG_MFG_ID, mfg) && mfg == 0x5449 && writeReg16(REG_CONFIG, INA226_CONFIG);
@@ -115,7 +118,33 @@ void loop()
 
   if (!sensorOk)
   {
-    delay(100);
+    // 見つからない間は Ex_I2C をスキャンして、見えているアドレスを表示する
+    static uint32_t lastScanMs = 0;
+    if (millis() - lastScanMs >= 1000)
+    {
+      lastScanMs = millis();
+      bool found[128] = {};
+      M5.Ex_I2C.scanID(found);
+      char list[200] = "";
+      for (int a = 1; a < 127; ++a)
+      {
+        if (found[a])
+        {
+          snprintf(list + strlen(list), sizeof(list) - strlen(list), " %02X", a);
+        }
+      }
+      Serial.printf("# scan Ex_I2C SDA=%d SCL=%d:%s\n", (int)M5.Ex_I2C.getSDA(), (int)M5.Ex_I2C.getSCL(), list);
+      M5.Display.setCursor(20, 80);
+      M5.Display.setTextColor(TFT_WHITE, TFT_BLACK);
+      M5.Display.printf("Ex_I2C SDA=%d SCL=%d\nfound:%s          ", (int)M5.Ex_I2C.getSDA(), (int)M5.Ex_I2C.getSCL(), list);
+      uint16_t mfg = 0;
+      sensorOk = readReg16(REG_MFG_ID, mfg) && mfg == 0x5449 && writeReg16(REG_CONFIG, INA226_CONFIG);
+      if (sensorOk)
+      {
+        M5.Display.fillScreen(TFT_BLACK);
+      }
+    }
+    delay(10);
     return;
   }
 
