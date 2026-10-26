@@ -1,0 +1,1785 @@
+{
+  "formatVersion": 1,
+  "name": "SoundBoxScreen",
+  "targetLibrary": "M5Unified",
+  "background": "#eceae4",
+  "profiles": [
+    {
+      "id": "Tab5",
+      "w": 1280,
+      "h": 720,
+      "rotation": 0,
+      "fonts": [
+        "lgfxJapanGothicP_40"
+      ],
+      "layout": {
+        "Boot": {
+          "band": {
+            "x": 0,
+            "y": 260,
+            "w": 1280,
+            "h": 200,
+            "r": 0,
+            "fill": true,
+            "color": "#2f3a45",
+            "visible": true
+          },
+          "title": {
+            "x": 640,
+            "y": 330,
+            "datum": "MC",
+            "size": 1.5,
+            "color": "#ffffff",
+            "text": "Nゲージ サウンドボックス",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "status": {
+            "x": 640,
+            "y": 410,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#ffffff",
+            "text": "音源を読み込んでいます…",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          }
+        },
+        "Drive": {
+          "topBar": {
+            "x": 0,
+            "y": 0,
+            "w": 1280,
+            "h": 100,
+            "r": 0,
+            "fill": true,
+            "color": "#2f3a45",
+            "visible": true
+          },
+          "trainName": {
+            "x": 40,
+            "y": 50,
+            "datum": "ML",
+            "size": 1.25,
+            "color": "#ffffff",
+            "text": "E231系 通勤電車",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "sensorStatus": {
+            "x": 1240,
+            "y": 50,
+            "datum": "MR",
+            "size": 0.75,
+            "color": "#ffffff",
+            "text": "● 電流検出 OK",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "statusCard": {
+            "x": 30,
+            "y": 120,
+            "w": 310,
+            "h": 210,
+            "r": 18,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "stateText": {
+            "x": 185,
+            "y": 175,
+            "datum": "MC",
+            "size": 1.25,
+            "color": "#4f8a5b",
+            "text": "走行中",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "meterFrame": {
+            "x": 55,
+            "y": 240,
+            "w": 260,
+            "h": 60,
+            "r": 12,
+            "fill": false,
+            "color": "#9a9a9a",
+            "visible": true
+          },
+          "trainBtnShadow": {
+            "x": 30,
+            "y": 356,
+            "w": 310,
+            "h": 160,
+            "r": 18,
+            "fill": true,
+            "color": "#323c46",
+            "visible": true
+          },
+          "trainBtn": {
+            "x": 30,
+            "y": 350,
+            "w": 310,
+            "h": 160,
+            "r": 18,
+            "fill": true,
+            "color": "#4a5866",
+            "visible": true
+          },
+          "trainBtnPressed": {
+            "x": 38,
+            "y": 358,
+            "w": 294,
+            "h": 144,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "trainBtnLabel": {
+            "x": 185,
+            "y": 430,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#ffffff",
+            "text": "車両選択",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "stopBtnShadow": {
+            "x": 30,
+            "y": 536,
+            "w": 310,
+            "h": 160,
+            "r": 18,
+            "fill": true,
+            "color": "#7f312b",
+            "visible": true
+          },
+          "stopBtn": {
+            "x": 30,
+            "y": 530,
+            "w": 310,
+            "h": 160,
+            "r": 18,
+            "fill": true,
+            "color": "#b5473f",
+            "visible": true
+          },
+          "stopBtnPressed": {
+            "x": 38,
+            "y": 538,
+            "w": 294,
+            "h": 144,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "stopBtnLabel": {
+            "x": 185,
+            "y": 610,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#ffffff",
+            "text": "全停止",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "fx1Shadow": {
+            "x": 370,
+            "y": 126,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#9c7a30",
+            "visible": true
+          },
+          "fx1": {
+            "x": 370,
+            "y": 120,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#d4a645",
+            "visible": true
+          },
+          "fx1Pressed": {
+            "x": 378,
+            "y": 128,
+            "w": 244,
+            "h": 234,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "fx1Label": {
+            "x": 500,
+            "y": 245,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#2a2a2a",
+            "text": "警笛",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "fx2Shadow": {
+            "x": 680,
+            "y": 126,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#2a4e74",
+            "visible": true
+          },
+          "fx2": {
+            "x": 680,
+            "y": 120,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#3d6fa3",
+            "visible": true
+          },
+          "fx2Pressed": {
+            "x": 688,
+            "y": 128,
+            "w": 244,
+            "h": 234,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "fx2Label": {
+            "x": 810,
+            "y": 245,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#ffffff",
+            "text": "ドア",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "fx3Shadow": {
+            "x": 990,
+            "y": 126,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#36613f",
+            "visible": true
+          },
+          "fx3": {
+            "x": 990,
+            "y": 120,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#4f8a5b",
+            "visible": true
+          },
+          "fx3Pressed": {
+            "x": 998,
+            "y": 128,
+            "w": 244,
+            "h": 234,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "fx3Label": {
+            "x": 1120,
+            "y": 245,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#ffffff",
+            "text": "発車ベル",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "fx4Shadow": {
+            "x": 370,
+            "y": 436,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#8f5229",
+            "visible": true
+          },
+          "fx4": {
+            "x": 370,
+            "y": 430,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#c7743a",
+            "visible": true
+          },
+          "fx4Pressed": {
+            "x": 378,
+            "y": 438,
+            "w": 244,
+            "h": 234,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "fx4Label": {
+            "x": 500,
+            "y": 555,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#ffffff",
+            "text": "車内放送",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "fx5Shadow": {
+            "x": 680,
+            "y": 436,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#534872",
+            "visible": true
+          },
+          "fx5": {
+            "x": 680,
+            "y": 430,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#76679f",
+            "visible": true
+          },
+          "fx5Pressed": {
+            "x": 688,
+            "y": 438,
+            "w": 244,
+            "h": 234,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "fx5Label": {
+            "x": 810,
+            "y": 555,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#ffffff",
+            "text": "駅到着",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "fx6Shadow": {
+            "x": 990,
+            "y": 436,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#7f312b",
+            "visible": true
+          },
+          "fx6": {
+            "x": 990,
+            "y": 430,
+            "w": 260,
+            "h": 250,
+            "r": 18,
+            "fill": true,
+            "color": "#b5473f",
+            "visible": true
+          },
+          "fx6Pressed": {
+            "x": 998,
+            "y": 438,
+            "w": 244,
+            "h": 234,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "fx6Label": {
+            "x": 1120,
+            "y": 555,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#ffffff",
+            "text": "ブレーキ",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          }
+        },
+        "TrainSelect": {
+          "topBar": {
+            "x": 0,
+            "y": 0,
+            "w": 1280,
+            "h": 130,
+            "r": 0,
+            "fill": true,
+            "color": "#2f3a45",
+            "visible": true
+          },
+          "backBtnShadow": {
+            "x": 30,
+            "y": 18,
+            "w": 260,
+            "h": 100,
+            "r": 18,
+            "fill": true,
+            "color": "#b9b4a8",
+            "visible": true
+          },
+          "backBtn": {
+            "x": 30,
+            "y": 12,
+            "w": 260,
+            "h": 100,
+            "r": 18,
+            "fill": true,
+            "color": "#dcd8cf",
+            "visible": true
+          },
+          "backBtnPressed": {
+            "x": 38,
+            "y": 20,
+            "w": 244,
+            "h": 84,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "backBtnLabel": {
+            "x": 160,
+            "y": 62,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#2a2a2a",
+            "text": "戻る",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "title": {
+            "x": 790,
+            "y": 65,
+            "datum": "MC",
+            "size": 1.25,
+            "color": "#ffffff",
+            "text": "車両を選ぶ",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "card1Shadow": {
+            "x": 40,
+            "y": 170,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#cfcbc1",
+            "visible": true
+          },
+          "card1": {
+            "x": 40,
+            "y": 160,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "card1Selected": {
+            "x": 46,
+            "y": 166,
+            "w": 358,
+            "h": 228,
+            "r": 14,
+            "fill": false,
+            "color": "#3d6fa3",
+            "visible": true
+          },
+          "card1Name": {
+            "x": 225,
+            "y": 280,
+            "datum": "MC",
+            "size": 0.85,
+            "color": "#2a2a2a",
+            "text": "E231系 通勤電車",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "card2Shadow": {
+            "x": 455,
+            "y": 170,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#cfcbc1",
+            "visible": true
+          },
+          "card2": {
+            "x": 455,
+            "y": 160,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "card2Selected": {
+            "x": 461,
+            "y": 166,
+            "w": 358,
+            "h": 228,
+            "r": 14,
+            "fill": false,
+            "color": "#3d6fa3",
+            "visible": false
+          },
+          "card2Name": {
+            "x": 640,
+            "y": 280,
+            "datum": "MC",
+            "size": 0.85,
+            "color": "#2a2a2a",
+            "text": "SL D51",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "card3Shadow": {
+            "x": 870,
+            "y": 170,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#cfcbc1",
+            "visible": true
+          },
+          "card3": {
+            "x": 870,
+            "y": 160,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "card3Selected": {
+            "x": 876,
+            "y": 166,
+            "w": 358,
+            "h": 228,
+            "r": 14,
+            "fill": false,
+            "color": "#3d6fa3",
+            "visible": false
+          },
+          "card3Name": {
+            "x": 1055,
+            "y": 280,
+            "datum": "MC",
+            "size": 0.85,
+            "color": "#2a2a2a",
+            "text": "キハ110系",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "card4Shadow": {
+            "x": 40,
+            "y": 450,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#cfcbc1",
+            "visible": true
+          },
+          "card4": {
+            "x": 40,
+            "y": 440,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "card4Selected": {
+            "x": 46,
+            "y": 446,
+            "w": 358,
+            "h": 228,
+            "r": 14,
+            "fill": false,
+            "color": "#3d6fa3",
+            "visible": false
+          },
+          "card4Name": {
+            "x": 225,
+            "y": 560,
+            "datum": "MC",
+            "size": 0.85,
+            "color": "#2a2a2a",
+            "text": "（なし）",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "card5Shadow": {
+            "x": 455,
+            "y": 450,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#cfcbc1",
+            "visible": true
+          },
+          "card5": {
+            "x": 455,
+            "y": 440,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "card5Selected": {
+            "x": 461,
+            "y": 446,
+            "w": 358,
+            "h": 228,
+            "r": 14,
+            "fill": false,
+            "color": "#3d6fa3",
+            "visible": false
+          },
+          "card5Name": {
+            "x": 640,
+            "y": 560,
+            "datum": "MC",
+            "size": 0.85,
+            "color": "#2a2a2a",
+            "text": "（なし）",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "card6Shadow": {
+            "x": 870,
+            "y": 450,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#cfcbc1",
+            "visible": true
+          },
+          "card6": {
+            "x": 870,
+            "y": 440,
+            "w": 370,
+            "h": 240,
+            "r": 18,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "card6Selected": {
+            "x": 876,
+            "y": 446,
+            "w": 358,
+            "h": 228,
+            "r": 14,
+            "fill": false,
+            "color": "#3d6fa3",
+            "visible": false
+          },
+          "card6Name": {
+            "x": 1055,
+            "y": 560,
+            "datum": "MC",
+            "size": 0.85,
+            "color": "#2a2a2a",
+            "text": "（なし）",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          }
+        },
+        "Settings": {
+          "topBar": {
+            "x": 0,
+            "y": 0,
+            "w": 1280,
+            "h": 130,
+            "r": 0,
+            "fill": true,
+            "color": "#2f3a45",
+            "visible": true
+          },
+          "backBtnShadow": {
+            "x": 30,
+            "y": 18,
+            "w": 260,
+            "h": 100,
+            "r": 18,
+            "fill": true,
+            "color": "#b9b4a8",
+            "visible": true
+          },
+          "backBtn": {
+            "x": 30,
+            "y": 12,
+            "w": 260,
+            "h": 100,
+            "r": 18,
+            "fill": true,
+            "color": "#dcd8cf",
+            "visible": true
+          },
+          "backBtnPressed": {
+            "x": 38,
+            "y": 20,
+            "w": 244,
+            "h": 84,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "backBtnLabel": {
+            "x": 160,
+            "y": 62,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#2a2a2a",
+            "text": "戻る",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "title": {
+            "x": 790,
+            "y": 65,
+            "datum": "MC",
+            "size": 1.25,
+            "color": "#ffffff",
+            "text": "設定",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "volLabel": {
+            "x": 60,
+            "y": 230,
+            "datum": "ML",
+            "size": 1.0,
+            "color": "#2a2a2a",
+            "text": "音量",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "volDownShadow": {
+            "x": 360,
+            "y": 171,
+            "w": 180,
+            "h": 130,
+            "r": 18,
+            "fill": true,
+            "color": "#323c46",
+            "visible": true
+          },
+          "volDown": {
+            "x": 360,
+            "y": 165,
+            "w": 180,
+            "h": 130,
+            "r": 18,
+            "fill": true,
+            "color": "#4a5866",
+            "visible": true
+          },
+          "volDownPressed": {
+            "x": 368,
+            "y": 173,
+            "w": 164,
+            "h": 114,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "volDownLabel": {
+            "x": 450,
+            "y": 230,
+            "datum": "MC",
+            "size": 1.5,
+            "color": "#ffffff",
+            "text": "ー",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "volValue": {
+            "x": 650,
+            "y": 230,
+            "datum": "MC",
+            "size": 1.5,
+            "color": "#2a2a2a",
+            "text": "7",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "volUpShadow": {
+            "x": 760,
+            "y": 171,
+            "w": 180,
+            "h": 130,
+            "r": 18,
+            "fill": true,
+            "color": "#323c46",
+            "visible": true
+          },
+          "volUp": {
+            "x": 760,
+            "y": 165,
+            "w": 180,
+            "h": 130,
+            "r": 18,
+            "fill": true,
+            "color": "#4a5866",
+            "visible": true
+          },
+          "volUpPressed": {
+            "x": 768,
+            "y": 173,
+            "w": 164,
+            "h": 114,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "volUpLabel": {
+            "x": 850,
+            "y": 230,
+            "datum": "MC",
+            "size": 1.5,
+            "color": "#ffffff",
+            "text": "＋",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "briLabel": {
+            "x": 60,
+            "y": 400,
+            "datum": "ML",
+            "size": 1.0,
+            "color": "#2a2a2a",
+            "text": "明るさ",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "briDownShadow": {
+            "x": 360,
+            "y": 341,
+            "w": 180,
+            "h": 130,
+            "r": 18,
+            "fill": true,
+            "color": "#323c46",
+            "visible": true
+          },
+          "briDown": {
+            "x": 360,
+            "y": 335,
+            "w": 180,
+            "h": 130,
+            "r": 18,
+            "fill": true,
+            "color": "#4a5866",
+            "visible": true
+          },
+          "briDownPressed": {
+            "x": 368,
+            "y": 343,
+            "w": 164,
+            "h": 114,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "briDownLabel": {
+            "x": 450,
+            "y": 400,
+            "datum": "MC",
+            "size": 1.5,
+            "color": "#ffffff",
+            "text": "ー",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "briValue": {
+            "x": 650,
+            "y": 400,
+            "datum": "MC",
+            "size": 1.5,
+            "color": "#2a2a2a",
+            "text": "5",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "briUpShadow": {
+            "x": 760,
+            "y": 341,
+            "w": 180,
+            "h": 130,
+            "r": 18,
+            "fill": true,
+            "color": "#323c46",
+            "visible": true
+          },
+          "briUp": {
+            "x": 760,
+            "y": 335,
+            "w": 180,
+            "h": 130,
+            "r": 18,
+            "fill": true,
+            "color": "#4a5866",
+            "visible": true
+          },
+          "briUpPressed": {
+            "x": 768,
+            "y": 343,
+            "w": 164,
+            "h": 114,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "briUpLabel": {
+            "x": 850,
+            "y": 400,
+            "datum": "MC",
+            "size": 1.5,
+            "color": "#ffffff",
+            "text": "＋",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "monitorCard": {
+            "x": 40,
+            "y": 510,
+            "w": 900,
+            "h": 180,
+            "r": 18,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "monitor": {
+            "x": 70,
+            "y": 600,
+            "datum": "ML",
+            "size": 0.85,
+            "color": "#2a2a2a",
+            "text": "123.5 mA  走行中  62%",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "creditBtnShadow": {
+            "x": 990,
+            "y": 516,
+            "w": 250,
+            "h": 180,
+            "r": 18,
+            "fill": true,
+            "color": "#b9b4a8",
+            "visible": true
+          },
+          "creditBtn": {
+            "x": 990,
+            "y": 510,
+            "w": 250,
+            "h": 180,
+            "r": 18,
+            "fill": true,
+            "color": "#dcd8cf",
+            "visible": true
+          },
+          "creditBtnPressed": {
+            "x": 998,
+            "y": 518,
+            "w": 234,
+            "h": 164,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "creditBtnLabel": {
+            "x": 1115,
+            "y": 600,
+            "datum": "MC",
+            "size": 0.85,
+            "color": "#2a2a2a",
+            "text": "クレジット",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          }
+        },
+        "Message": {
+          "shadow": {
+            "x": 250,
+            "y": 170,
+            "w": 800,
+            "h": 400,
+            "r": 24,
+            "fill": true,
+            "color": "#8a877f",
+            "visible": true
+          },
+          "box": {
+            "x": 240,
+            "y": 160,
+            "w": 800,
+            "h": 400,
+            "r": 24,
+            "fill": true,
+            "color": "#fbfaf7",
+            "visible": true
+          },
+          "frame": {
+            "x": 240,
+            "y": 160,
+            "w": 800,
+            "h": 400,
+            "r": 24,
+            "fill": false,
+            "color": "#2f3a45",
+            "visible": true
+          },
+          "msg": {
+            "x": 640,
+            "y": 300,
+            "datum": "MC",
+            "size": 1.0,
+            "color": "#2a2a2a",
+            "text": "SDカードが見つかりません",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          },
+          "okBtnShadow": {
+            "x": 490,
+            "y": 406,
+            "w": 300,
+            "h": 120,
+            "r": 18,
+            "fill": true,
+            "color": "#323c46",
+            "visible": true
+          },
+          "okBtn": {
+            "x": 490,
+            "y": 400,
+            "w": 300,
+            "h": 120,
+            "r": 18,
+            "fill": true,
+            "color": "#4a5866",
+            "visible": true
+          },
+          "okBtnPressed": {
+            "x": 498,
+            "y": 408,
+            "w": 284,
+            "h": 104,
+            "r": 12,
+            "fill": false,
+            "color": "#ffffff",
+            "visible": false
+          },
+          "okBtnLabel": {
+            "x": 640,
+            "y": 460,
+            "datum": "MC",
+            "size": 1.25,
+            "color": "#ffffff",
+            "text": "OK",
+            "visible": true,
+            "font": "lgfxJapanGothicP_40"
+          }
+        }
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "id": "Boot",
+      "desc": "起動中。音源パックの読み込みと U200 の検出",
+      "parts": [
+        {
+          "id": "band",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "title",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "status",
+          "type": "Text",
+          "desc": "進行状況"
+        }
+      ]
+    },
+    {
+      "id": "Drive",
+      "desc": "運転画面（メイン）",
+      "parts": [
+        {
+          "id": "topBar",
+          "type": "Rect",
+          "desc": "長押しで設定へ",
+          "handle": true
+        },
+        {
+          "id": "trainName",
+          "type": "Text",
+          "desc": "選択中の音源パック名"
+        },
+        {
+          "id": "sensorStatus",
+          "type": "Text",
+          "desc": "U200 の検出状態"
+        },
+        {
+          "id": "statusCard",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "stateText",
+          "type": "Text",
+          "desc": "停止/発進/走行中/減速"
+        },
+        {
+          "id": "meterFrame",
+          "type": "Rect",
+          "desc": "メーター枠（中身は overlay で描く）",
+          "handle": true
+        },
+        {
+          "id": "trainBtnShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "trainBtn",
+          "type": "Rect",
+          "desc": "車両選択へ",
+          "handle": true
+        },
+        {
+          "id": "trainBtnPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "trainBtnLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "stopBtnShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "stopBtn",
+          "type": "Rect",
+          "desc": "全音停止",
+          "handle": true
+        },
+        {
+          "id": "stopBtnPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "stopBtnLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "fx1Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "fx1",
+          "type": "Rect",
+          "desc": "効果音ボタン 1（パック定義）",
+          "handle": true
+        },
+        {
+          "id": "fx1Pressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "fx1Label",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "fx2Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "fx2",
+          "type": "Rect",
+          "desc": "効果音ボタン 2（パック定義）",
+          "handle": true
+        },
+        {
+          "id": "fx2Pressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "fx2Label",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "fx3Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "fx3",
+          "type": "Rect",
+          "desc": "効果音ボタン 3（パック定義）",
+          "handle": true
+        },
+        {
+          "id": "fx3Pressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "fx3Label",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "fx4Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "fx4",
+          "type": "Rect",
+          "desc": "効果音ボタン 4（パック定義）",
+          "handle": true
+        },
+        {
+          "id": "fx4Pressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "fx4Label",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "fx5Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "fx5",
+          "type": "Rect",
+          "desc": "効果音ボタン 5（パック定義）",
+          "handle": true
+        },
+        {
+          "id": "fx5Pressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "fx5Label",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "fx6Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "fx6",
+          "type": "Rect",
+          "desc": "効果音ボタン 6（パック定義）",
+          "handle": true
+        },
+        {
+          "id": "fx6Pressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "fx6Label",
+          "type": "Text",
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "id": "TrainSelect",
+      "desc": "車両（音源パック）選択",
+      "parts": [
+        {
+          "id": "topBar",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "backBtnShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "backBtn",
+          "type": "Rect",
+          "desc": "",
+          "handle": true
+        },
+        {
+          "id": "backBtnPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "backBtnLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "title",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "card1Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "card1",
+          "type": "Rect",
+          "desc": "パック 1",
+          "handle": true,
+          "visibleField": true
+        },
+        {
+          "id": "card1Selected",
+          "type": "Rect",
+          "desc": "選択中の枠",
+          "visibleField": true
+        },
+        {
+          "id": "card1Name",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "card2Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "card2",
+          "type": "Rect",
+          "desc": "パック 2",
+          "handle": true,
+          "visibleField": true
+        },
+        {
+          "id": "card2Selected",
+          "type": "Rect",
+          "desc": "選択中の枠",
+          "visibleField": true
+        },
+        {
+          "id": "card2Name",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "card3Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "card3",
+          "type": "Rect",
+          "desc": "パック 3",
+          "handle": true,
+          "visibleField": true
+        },
+        {
+          "id": "card3Selected",
+          "type": "Rect",
+          "desc": "選択中の枠",
+          "visibleField": true
+        },
+        {
+          "id": "card3Name",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "card4Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "card4",
+          "type": "Rect",
+          "desc": "パック 4",
+          "handle": true,
+          "visibleField": true
+        },
+        {
+          "id": "card4Selected",
+          "type": "Rect",
+          "desc": "選択中の枠",
+          "visibleField": true
+        },
+        {
+          "id": "card4Name",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "card5Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "card5",
+          "type": "Rect",
+          "desc": "パック 5",
+          "handle": true,
+          "visibleField": true
+        },
+        {
+          "id": "card5Selected",
+          "type": "Rect",
+          "desc": "選択中の枠",
+          "visibleField": true
+        },
+        {
+          "id": "card5Name",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "card6Shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "card6",
+          "type": "Rect",
+          "desc": "パック 6",
+          "handle": true,
+          "visibleField": true
+        },
+        {
+          "id": "card6Selected",
+          "type": "Rect",
+          "desc": "選択中の枠",
+          "visibleField": true
+        },
+        {
+          "id": "card6Name",
+          "type": "Text",
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "id": "Settings",
+      "desc": "設定（上の帯の長押しで開く）",
+      "parts": [
+        {
+          "id": "topBar",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "backBtnShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "backBtn",
+          "type": "Rect",
+          "desc": "",
+          "handle": true
+        },
+        {
+          "id": "backBtnPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "backBtnLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "title",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "volLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "volDownShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "volDown",
+          "type": "Rect",
+          "desc": "",
+          "handle": true
+        },
+        {
+          "id": "volDownPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "volDownLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "volValue",
+          "type": "Text",
+          "desc": "音量"
+        },
+        {
+          "id": "volUpShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "volUp",
+          "type": "Rect",
+          "desc": "",
+          "handle": true
+        },
+        {
+          "id": "volUpPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "volUpLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "briLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "briDownShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "briDown",
+          "type": "Rect",
+          "desc": "",
+          "handle": true
+        },
+        {
+          "id": "briDownPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "briDownLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "briValue",
+          "type": "Text",
+          "desc": "明るさ"
+        },
+        {
+          "id": "briUpShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "briUp",
+          "type": "Rect",
+          "desc": "",
+          "handle": true
+        },
+        {
+          "id": "briUpPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "briUpLabel",
+          "type": "Text",
+          "desc": ""
+        },
+        {
+          "id": "monitorCard",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "monitor",
+          "type": "Text",
+          "desc": "電流モニタ"
+        },
+        {
+          "id": "creditBtnShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "creditBtn",
+          "type": "Rect",
+          "desc": "",
+          "handle": true
+        },
+        {
+          "id": "creditBtnPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "creditBtnLabel",
+          "type": "Text",
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "id": "Message",
+      "desc": "メッセージダイアログ（透過シーン）",
+      "parts": [
+        {
+          "id": "shadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "box",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "frame",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "msg",
+          "type": "Text",
+          "desc": "本文"
+        },
+        {
+          "id": "okBtnShadow",
+          "type": "Rect",
+          "desc": ""
+        },
+        {
+          "id": "okBtn",
+          "type": "Rect",
+          "desc": "",
+          "handle": true
+        },
+        {
+          "id": "okBtnPressed",
+          "type": "Rect",
+          "desc": "押下中の枠（実行時に表示）",
+          "visibleField": true
+        },
+        {
+          "id": "okBtnLabel",
+          "type": "Text",
+          "desc": ""
+        }
+      ],
+      "transparent": true
+    }
+  ],
+  "assets": [],
+  "fonts": [
+    {
+      "name": "lgfxJapanGothicP_40"
+    }
+  ]
+}
