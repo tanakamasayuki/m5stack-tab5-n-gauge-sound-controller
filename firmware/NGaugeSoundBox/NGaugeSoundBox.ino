@@ -16,7 +16,23 @@
 
 using namespace SoundBoxScreen;
 
-static Screen screen(M5.Display);
+// 既定のタイル（約 19KB）だと 1280 幅では約 100 分割になり、描画に 1 秒近くかかる。
+// PSRAM に大きなタイルを置いて、分割数を減らす
+struct BufferedScreen : Screen
+{
+  using Screen::Screen;
+
+  void setupTiles(size_t bytes, bool psram = true)
+  {
+    _vscreen.setUsePsram(psram);
+    _vscreen.setMemoryLimit(bytes);
+    _vscreen.begin();
+    Serial.printf("# tiles=%d height=%dpx double=%d psram=%d\n", _vscreen.tileCount(), _vscreen.tileHeight(),
+                  (int)_vscreen.doubleBuffer(), (int)_vscreen.tileIsPsram());
+  }
+};
+
+static BufferedScreen screen(M5.Display);
 static CurrentSensor sensor;
 static SoundEngine sound;
 
@@ -50,21 +66,29 @@ static const char *stateLabel(const CurrentSensor::Snapshot &s)
   return "";
 }
 
-// メーターの中身（level のバー）
-template <class GFX>
-void driveOverlay(GFX &g, const Scene::Drive &)
+// メーターの中身（level のバー）。画面全体を描き直すと 200ms 以上かかるので、
+// メーター枠の内側だけをスプライトに描いて直接転送する
+static LGFX_Sprite meterSprite(&M5.Display);
+static lgfxsb::Rect meterRect;
+
+static void drawMeter()
 {
-  lgfxsb::Rect r;
-  if (!screen.bounds(Scene::Drive::Part::meterFrame, r))
+  if (!meterSprite.getBuffer())
   {
-    return;
+    if (!screen.bounds(Scene::Drive::Part::meterFrame, meterRect))
+    {
+      return;
+    }
+    meterSprite.createSprite(meterRect.w - 2, meterRect.h - 2);
   }
   const float level = lastSnap.ok ? lastSnap.level : (manualRunning ? 0.5f : 0.0f);
-  const int w = int((r.w - 12) * level);
+  meterSprite.fillScreen(meterSprite.color888(0xfb, 0xfa, 0xf7)); // statusCard の色
+  const int w = int((meterSprite.width() - 10) * level);
   if (w > 0)
   {
-    g.fillRoundRect(r.x + 6, r.y + 6, w, r.h - 12, 8, g.color888(0x4f, 0x8a, 0x5b));
+    meterSprite.fillRoundRect(5, 5, w, meterSprite.height() - 10, 8, meterSprite.color888(0x4f, 0x8a, 0x5b));
   }
+  meterSprite.pushSprite(meterRect.x + 1, meterRect.y + 1);
 }
 
 static void draw()
@@ -95,6 +119,7 @@ static void draw()
     d.trainBtnPressedVisible = true;
   }
   screen.show(d);
+  drawMeter();
 }
 
 static int fxIndex(Scene::Drive::Part p)
@@ -128,8 +153,8 @@ void setup()
   // Tab5 の標準の向きは縦（720x1280）。横向きにしてから begin() で基準の向きとして覚えさせる
   M5.Display.setRotation(1);
   screen.begin();
-  screen.setOverlay(driveOverlay);
 
+  screen.setupTiles(1280 * 180 * 2); // PSRAM に 4 分割。描画は約 216ms（内蔵 RAM 100KB の 18 分割とほぼ同じ）
   sensor.begin();
   sound.begin();
   Serial.println("# NGaugeSoundBox");
@@ -183,21 +208,31 @@ void loop()
     dirty = true;
   }
 
-  // 走行状態: 変わったら描き直す。メーターは 0.2 秒ごと
+  // 走行状態: 変わったときだけ画面全体を描き直す。メーターは 0.2 秒ごとに単独で描く
   const auto s = sensor.snapshot();
   sound.setDrive(s.state, s.level, s.ok);
-  static uint32_t lastMeterMs = 0;
-  const bool changed = s.ok != lastSnap.ok || s.state != lastSnap.state;
+  if (s.ok != lastSnap.ok || s.state != lastSnap.state)
+  {
+    dirty = true;
+  }
   lastSnap = s;
-  if (changed || millis() - lastMeterMs >= 200)
+  static uint32_t lastMeterMs = 0;
+  if (!dirty && millis() - lastMeterMs >= 200)
   {
     lastMeterMs = millis();
-    dirty = true;
+    drawMeter();
   }
 
   if (dirty)
   {
+    const uint32_t t0 = millis();
     draw();
+    static uint32_t lastReportMs = 0;
+    if (millis() - lastReportMs >= 2000)
+    {
+      lastReportMs = millis();
+      Serial.printf("# draw %lu ms\n", (unsigned long)(millis() - t0));
+    }
   }
   delay(5);
 }
