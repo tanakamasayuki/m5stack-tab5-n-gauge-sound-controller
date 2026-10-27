@@ -76,24 +76,6 @@
 2. 列分割で大きく速くなれば、アプリの設定を列分割に変える。
 3. 文字の件は、LovyanGFX に修正を依頼する（下の下書き）。
 
-## 5. LovyanGFX への修正依頼の下書き
+## 5. LovyanGFX への修正依頼
 
-> **タイトル：** drawString does not early-reject text that lies entirely outside the clip rect
->
-> When drawing into a small sprite (e.g. a 1280x7 tile used for tiled double buffering), `drawString()` costs about the same whether the text is inside the sprite or completely outside it. Shapes such as `fillRect` / `fillRoundRect` return almost immediately when they are outside the clip rect, but text does not.
->
-> Measured on lang-ship host (LovyanGFX 1.2.26), 1280x7 RGB565 sprite, best of 7 x 2000 calls:
->
-> | call | inside | outside |
-> |---|---|---|
-> | drawString u8g2 lgfxJapanGothicP_40, 4 chars | 4,386 ns | 4,058 ns |
-> | drawString u8g2 ASCII, 8 chars | 4,072 ns | 3,865 ns |
-> | drawString GFXfont FreeSans24pt7b, 8 chars | 5,413 ns | 4,964 ns |
-> | drawString Font4, 8 chars | 2,109 ns | 1,594 ns |
-> | fillRect 260x250 (reference) | 54 ns | 3 ns |
->
-> With tiled rendering, every text is drawn once per tile, so this cost is multiplied by the number of tiles. A vertical bounds check before decoding glyphs (the line box is known from the datum, the font height and the text size) would let text outside the clip rect be skipped almost for free.
->
-> Minor: `drawLine` entirely outside the clip rect is slower than inside (860 ns vs 559 ns).
->
-> Repro sketch: `experiments/ClipBench/ClipBench.ino`.
+Issue のテンプレートに沿った本文を [lovyangfx-issue-drawstring-clip.md](lovyangfx-issue-drawstring-clip.md) に置いた。再現コードは単体で動き、PC 上で同じ傾向が出ることを確認済み。
