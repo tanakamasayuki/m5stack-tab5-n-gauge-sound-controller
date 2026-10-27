@@ -10,5 +10,6 @@ profiles:
       - LGFXVirtualCanvas (1.4.0)
       - dir: ../../../LGFXScreenBuilder
       - dir: ../../libraries/TrainSense
+      - dir: ../../libraries/SoundSynth
 
 default_profile: m5stack_tab5
