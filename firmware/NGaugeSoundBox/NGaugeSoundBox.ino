@@ -3,7 +3,8 @@
 // 画面のボタンで効果音を鳴らす。
 //
 // いまの段階:
-// - 画面は運転画面（Drive）と車両選択画面（TrainSelect）。設定は未実装
+// - 画面は運転画面（Drive）、車両選択画面（TrainSelect）、設定画面（Settings）。
+//   設定画面は、運転画面の上の帯を 1 秒長押しすると開く
 // - 音はすべて SoundEngine で合成している。車両は内蔵の 3 種類で、音源パックはまだ読まない
 // - 電流検出がないときは、メーター部分をタップすると手動で発車・停車する
 
@@ -42,6 +43,8 @@ enum class Page : uint8_t
 {
   Drive,
   TrainSelect,
+  Settings,
+  Credits, // 設定画面の上に重ねるダイアログ
 };
 
 static Page page = Page::Drive;
@@ -52,6 +55,15 @@ static bool pressedStop = false;
 static bool pressedTrain = false;
 static bool pressedBack = false;
 static int pressedCard = -1;
+static int pressedSetting = -1; // 設定画面で押しているボタン（Scene::Settings::Part）
+static bool pressedOk = false;
+
+// 音量・明るさは 1〜10 の 10 段階で保存する
+static int volumeLevel = 7;
+static int brightnessLevel = 8;
+
+static void applyVolume() { M5.Speaker.setVolume(uint8_t(volumeLevel * 25)); }
+static void applyBrightness() { M5.Display.setBrightness(uint8_t(brightnessLevel * 25)); }
 
 static const char *stateLabel(const CurrentSensor::Snapshot &s)
 {
@@ -152,15 +164,58 @@ static void drawTrainSelect()
   screen.show(d);
 }
 
-static void draw()
+static void drawSettings()
 {
-  if (page == Page::Drive)
+  Scene::Settings d;
+  char vol[8], bri[8], mon[96];
+  snprintf(vol, sizeof(vol), "%d", volumeLevel);
+  snprintf(bri, sizeof(bri), "%d", brightnessLevel);
+  if (lastSnap.ok)
   {
-    drawDrive();
+    snprintf(mon, sizeof(mon), "%.1f mA  %s  %d%%", lastSnap.current, stateLabel(lastSnap), int(lastSnap.level * 100 + 0.5f));
   }
   else
   {
+    snprintf(mon, sizeof(mon), "電流検出なし（U200 を確認）");
+  }
+  d.volValue = vol;
+  d.briValue = bri;
+  d.monitor = mon;
+  using P = Scene::Settings::Part;
+  const P p = static_cast<P>(pressedSetting);
+  d.volDownPressedVisible = p == P::volDown;
+  d.volUpPressedVisible = p == P::volUp;
+  d.briDownPressedVisible = p == P::briDown;
+  d.briUpPressedVisible = p == P::briUp;
+  d.creditBtnPressedVisible = p == P::creditBtn;
+  d.backBtnPressedVisible = p == P::backBtn;
+  screen.show(d);
+}
+
+static void drawCredits()
+{
+  Scene::Message d;
+  d.msg = "音はすべて本体で合成（自作、CC0）";
+  d.okBtnPressedVisible = pressedOk;
+  screen.show(d);
+}
+
+static void draw()
+{
+  switch (page)
+  {
+  case Page::Drive:
+    drawDrive();
+    break;
+  case Page::TrainSelect:
     drawTrainSelect();
+    break;
+  case Page::Settings:
+    drawSettings();
+    break;
+  case Page::Credits:
+    drawCredits();
+    break;
   }
 }
 
@@ -251,8 +306,65 @@ static void touchTrainSelect(int x, int y)
   }
 }
 
+// 設定画面のタッチ。音量・明るさは押した瞬間に変え、戻る・クレジットは離したときに動く
+static void touchSettings(int x, int y)
+{
+  Scene::Settings cur;
+  using P = Scene::Settings::Part;
+  const P part = screen.hitTest(cur, x, y);
+  if (part == P::None)
+  {
+    return;
+  }
+  pressedSetting = int(part);
+  switch (part)
+  {
+  case P::volDown:
+  case P::volUp:
+    volumeLevel += part == P::volUp ? 1 : -1;
+    volumeLevel = volumeLevel < 1 ? 1 : (volumeLevel > 10 ? 10 : volumeLevel);
+    applyVolume();
+    prefs.putUChar("volume", uint8_t(volumeLevel));
+    sound.playEffect(0); // 音量の確かめ用に、1 番目の効果音を鳴らす
+    break;
+  case P::briDown:
+  case P::briUp:
+    brightnessLevel += part == P::briUp ? 1 : -1;
+    brightnessLevel = brightnessLevel < 1 ? 1 : (brightnessLevel > 10 ? 10 : brightnessLevel);
+    applyBrightness();
+    prefs.putUChar("bright", uint8_t(brightnessLevel));
+    break;
+  default:
+    break;
+  }
+}
+
+static void touchCredits(int x, int y)
+{
+  Scene::Message cur;
+  if (screen.hitTest(cur, x, y) == Scene::Message::Part::okBtn)
+  {
+    pressedOk = true;
+  }
+}
+
 static void release()
 {
+  using P = Scene::Settings::Part;
+  if (pressedSetting == int(P::backBtn))
+  {
+    page = Page::Drive;
+  }
+  else if (pressedSetting == int(P::creditBtn))
+  {
+    page = Page::Credits;
+  }
+  if (pressedOk)
+  {
+    page = Page::Settings;
+  }
+  pressedSetting = -1;
+  pressedOk = false;
   if (pressedTrain)
   {
     page = Page::TrainSelect;
@@ -282,8 +394,12 @@ void setup()
   M5.begin();
   Serial.begin(115200);
   M5.Speaker.begin();
-  M5.Speaker.setVolume(180);
   prefs.begin("soundbox");
+  volumeLevel = prefs.getUChar("volume", volumeLevel);
+  brightnessLevel = prefs.getUChar("bright", brightnessLevel);
+  applyVolume();
+  applyBrightness();
+  M5.Touch.setHoldThresh(1000); // 上の帯の長押し（設定画面を開く）
 
   // Tab5 の標準の向きは縦（720x1280）。横向きにしてから begin() で基準の向きとして覚えさせる
   M5.Display.setRotation(1);
@@ -305,15 +421,32 @@ void loop()
   const auto t = M5.Touch.getDetail();
   if (t.wasPressed())
   {
-    if (page == Page::Drive)
+    switch (page)
     {
+    case Page::Drive:
       touchDrive(t.x, t.y);
-    }
-    else
-    {
+      break;
+    case Page::TrainSelect:
       touchTrainSelect(t.x, t.y);
+      break;
+    case Page::Settings:
+      touchSettings(t.x, t.y);
+      break;
+    case Page::Credits:
+      touchCredits(t.x, t.y);
+      break;
     }
     dirty = true;
+  }
+  // 運転画面の上の帯を 1 秒長押しすると、設定画面を開く
+  if (t.wasHold() && page == Page::Drive)
+  {
+    Scene::Drive cur;
+    if (screen.hitTest(cur, t.base_x, t.base_y) == Scene::Drive::Part::topBar)
+    {
+      page = Page::Settings;
+      dirty = true;
+    }
   }
   if (t.wasReleased())
   {
@@ -329,6 +462,13 @@ void loop()
     dirty = true;
   }
   lastSnap = s;
+  // 設定画面の電流モニタは 1 秒ごとに描き直す（画面全体の描き直しは約 0.2 秒かかるため控えめに）
+  static uint32_t lastMonitorMs = 0;
+  if (page == Page::Settings && pressedSetting < 0 && millis() - lastMonitorMs >= 1000)
+  {
+    lastMonitorMs = millis();
+    dirty = true;
+  }
   static uint32_t lastMeterMs = 0;
   if (!dirty && millis() - lastMeterMs >= 200)
   {
