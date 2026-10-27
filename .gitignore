@@ -13,3 +13,4 @@ build/
 logs/
 tests/screens/SoundBoxScreen.h
 experiments/RenderBench/SoundBoxScreen.h
+tests/sound_pack/input/*.wav

@@ -1,0 +1,2 @@
+{ "format": 1, "name": "蒸気機関車", "running": { "type": "synth", "preset": "steam" },
+  "buttons": [ { "label": "汽笛", "file": "whistle.wav" } ] }

@@ -1,0 +1,1 @@
+{ "format": 1, "name": "x", "running": { "type": "none" }, "buttons": [ {"label":"1","file":"a.wav"},{"label":"2","file":"a.wav"},{"label":"3","file":"a.wav"},{"label":"4","file":"a.wav"},{"label":"5","file":"a.wav"},{"label":"6","file":"a.wav"},{"label":"7","file":"a.wav"} ] }

@@ -1,0 +1,1 @@
+{ "format": 1, "name": "x", "running": { "type": "synth", "preset": "maglev" }, "buttons": [ { "label": "a", "file": "a.wav" } ] }

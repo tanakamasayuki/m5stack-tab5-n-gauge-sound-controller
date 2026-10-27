@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "name": "E231系 通勤電車",
+  "kind": "電車",
+  "running": { "type": "wav", "loop": "run.wav", "idle": "idle.wav", "pitch": [0.7, 1.5], "volume": [0.3, 1.0] },
+  "buttons": [
+    { "label": "警笛", "file": "horn.wav", "mode": "hold" },
+    { "label": "ドア", "file": "door.wav" },
+    { "label": "発車ベル", "file": "bell.wav" },
+    { "label": "車内放送", "file": "announce.wav" },
+    { "label": "駅到着", "files": ["chime.wav", "door.wav"] },
+    { "label": "雨", "file": "rain.wav", "mode": "toggle" }
+  ],
+  "credits": [
+    { "files": ["horn.wav", "door.wav"], "author": "テスト", "license": "CC0-1.0", "source": "https://example.com/" }
+  ]
+}
