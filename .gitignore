@@ -12,3 +12,4 @@ build/
 # Experiment logs
 logs/
 tests/screens/SoundBoxScreen.h
+experiments/RenderBench/SoundBoxScreen.h

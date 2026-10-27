@@ -14,7 +14,11 @@ const lgfxsb = resolve(process.env.LGFXSB_DIR || join(root, '..', 'LGFXScreenBui
 const { generateHeader } = await import(pathToFileURL(join(lgfxsb, 'docs/src/codegen.js')).href);
 
 const source = join(root, 'ui/SoundBoxScreen.lgfxsb.json');
-const targets = ['tests/screens/SoundBoxScreen.h', 'firmware/NGaugeSoundBox/SoundBoxScreen.h'];
+const targets = [
+  'tests/screens/SoundBoxScreen.h',
+  'firmware/NGaugeSoundBox/SoundBoxScreen.h',
+  'experiments/RenderBench/SoundBoxScreen.h',
+];
 
 const header = generateHeader(JSON.parse(readFileSync(source, 'utf8')));
 for (const rel of targets) {
