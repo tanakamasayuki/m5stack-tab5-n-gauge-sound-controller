@@ -7,7 +7,7 @@ KATO のパワーパックで普段どおり N ゲージを運転しながら、
 - 車両の種類（音のセット）を選ぶと、音がすべて切り替わる。実際に走っている車両とは連動しない。
 - 列車本体とパワーパックは改造しない。
 
-詳しくは [docs/requirements.md](docs/requirements.md)。
+詳しくは [docs/requirements.md](docs/requirements.md)。開発のルールは [docs/development.md](docs/development.md)。
 
 ## 必要なもの
 
